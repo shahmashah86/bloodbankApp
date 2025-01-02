@@ -1,7 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:project1/presentation/bloc/doner/doner_bloc.dart';
 
 import 'package:project1/presentation/screen/home/Homescreen.dart';
+import 'package:project1/presentation/screen/widget/content.dart';
 
 class GetAdonerScreen extends StatefulWidget {
   GetAdonerScreen({super.key});
@@ -42,11 +45,13 @@ class _GetAdonerScreenState extends State<GetAdonerScreen> {
                     onTap: () {
                       selectedIndex.value = index;
                       selected_group = bloodgroups[index];
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return Homescreen(selectedGroup: selected_group);
-                      }));
+                      // Navigator.push(context,
+                      //     MaterialPageRoute(builder: (context) {
+                        
+                      // }));
+                      context.read().add(DonerSearch(donerBloodGroup: selected_group));
                     },
+
                     child: Card(
                         color: selectedIndex.value == index
                             ? Colors.red.shade100
@@ -66,148 +71,14 @@ class _GetAdonerScreenState extends State<GetAdonerScreen> {
                 itemCount: bloodgroups.length,
               ),
             ),
-            //   child: GridView.count(padding: EdgeInsets.all(8),
-            //     crossAxisCount: 4,
-            //     children: [
-            //       InkWell(
-            //         child: Card(
-            //           color: Colors.red,
-            //           child: Center(
-            //               child: Text(
-            //             "A+",
-            //             style: TextStyle(
-            //                 color: Colors.white,
-            //                 fontSize: 30,
-            //                 fontWeight: FontWeight.w500),
-            //           )),
-            //         ),
-            //       ),
-            //       InkWell(onTap:(){
-            //       selected_group="B+";
-            //       Navigator.push(context, MaterialPageRoute(builder: (context){
-            //         return Homescreen(selectedGroup: selected_group);
-            //         }));
-            //       },
-            //      // focusColor: Colors.black,
-            //                     //  splashColor: Colors.black,
-            // // highlightColor: Colors.green,
-
-            //         child: Card(   child: Center(
-            //           child: Text(
-            //               "B+",
-            //               style: TextStyle(
-            //                   color: Colors.red.shade800,
-            //                   fontSize: 30,
-            //                   fontWeight: FontWeight.w500),
-            //             ),
-            //         ),
-            //         ),
-            //       ),
-            //       InkWell(
-
-            //         child: Card(   color: Colors.red,   child: Center(
-            //           child: Text(
-            //               "AB+",
-            //               style: TextStyle(
-            //                   color: Colors.white,
-            //                   fontSize: 30,
-            //                   fontWeight: FontWeight.w500),
-            //             ),
-            //         ),
-            //         ),
-            //       ),
-            //       Card(   color:Colors.red,   child: Center(
-            //         child: Text(
-            //             "A-",
-            //             style: TextStyle(
-            //                 color: Colors.white,
-            //                 fontSize: 30,
-            //                 fontWeight: FontWeight.w500),
-            //           ),
-            //       ),
-            //       ),
-            //       Card(
-            //         color: Colors.red,  child: Center(
-            //           child: Text(
-            //             "B-",
-            //             style: TextStyle(
-            //                 color: Colors.white,
-            //                 fontSize: 30,
-            //                 fontWeight: FontWeight.w500),
-            //           ),
-            //         )
-            //       ),
-            //       Card(
-            //         color: Colors.red,
-            //            child: Center(
-            //              child: Text(
-            //                            "AB-",
-            //                            style: TextStyle(
-            //                 color: Colors.white,
-            //                 fontSize: 30,
-            //                 fontWeight: FontWeight.w500),
-            //                          ),
-            //            )
-            //       ),
-            //       Card(   color: Colors.red, child: Center(
-            //         child: Text(
-            //             "O+",
-            //             style: TextStyle(
-            //                 color: Colors.white,
-            //                 fontSize: 30,
-            //                 fontWeight: FontWeight.w500),
-            //           ),
-            //       ),
-            //       ),
-            //       Card(   color:Colors.red, child: Center(
-            //         child: Text(
-            //             "O-",
-            //             style: TextStyle(
-            //                 color: Colors.white,
-            //                 fontSize: 30,
-            //                 fontWeight: FontWeight.w500),
-            //           ),
-            //       ),
-            //       ),
-            //     ],
-            //   ),
+            
           ),
         ),
         SizedBox(
           height: 20,
         ),
-        Slider(
-          min: 0,
-          max: 25,
-          label: 'kk',
-          activeColor: Colors.red.shade900,
-          inactiveColor: Colors.red.shade100,
-          value: km.toDouble(),
-          onChanged: (value) {
-            final distance = value.toInt();
-            km = distance.toInt();
-            setState(() {});
-          },
-          thumbColor: Colors.white,
-        ),
-        Text(
-          "Distance range is $km km",
-          style: TextStyle(fontSize: 17),
-        ),
-        SizedBox(
-          height: 55,
-        ),
-        TextButton(
-            onPressed: () {},
-            style: ButtonStyle(
-                shape: WidgetStatePropertyAll(
-                  RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-                ),
-                backgroundColor: WidgetStatePropertyAll(Colors.red.shade900)),
-            child: Text(
-              "choose doner",
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            ))
+        // Expanded(child: content())
+        
       ]),
     );
   }

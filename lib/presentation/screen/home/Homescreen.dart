@@ -1,14 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:project1/domain/model/donerDetails.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:project1/domain/doner/doner_model/donerDetails.dart';
 import 'package:project1/model/save_edit_buttonmodel.dart';
-import 'package:project1/package/firebase/firebase_service.dart';
+import 'package:project1/presentation/bloc/doner/doner_bloc.dart';
 import 'package:project1/presentation/screen/doner/addNewdoner_screen.dart';
 import 'package:project1/presentation/screen/doner/getAdoner_screen.dart';
 import 'package:project1/presentation/screen/auth/login_screen.dart';
+import 'package:project1/presentation/screen/widget/content.dart';
 
-class Homescreen extends StatelessWidget {
-  String? selectedGroup;
-  Homescreen({this.selectedGroup, super.key});
+
+class Homescreen extends StatefulWidget {
+
+  Homescreen({ super.key});
+
+  @override
+  State<Homescreen> createState() => _HomescreenState();
+}
+
+class _HomescreenState extends State<Homescreen> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    context.read<DonerBloc>().add(DonerGetAll());
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,12 +60,10 @@ class Homescreen extends StatelessWidget {
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
                   return Homescreen(
-                    selectedGroup: null,
+                   
                   );
                 }));
               },
-              
-
               child: ListTile(
                 title: Text(
                   "Home",
@@ -58,16 +71,13 @@ class Homescreen extends StatelessWidget {
                 ),
               ),
             ),
-             InkWell(
+            InkWell(
               onTap: () {
+                Navigator.pop(context);
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return LoginScreen(
-                    
-                  );
+                  return LoginScreen();
                 }));
               },
-              
-
               child: ListTile(
                 title: Text(
                   "Login",
@@ -77,6 +87,7 @@ class Homescreen extends StatelessWidget {
             ),
             InkWell(
               onTap: () {
+                      Navigator.pop(context);
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
                   return AddnewdonerScreen();
                 }));
@@ -91,6 +102,7 @@ class Homescreen extends StatelessWidget {
             Divider(),
             InkWell(
               onTap: () {
+                Navigator.pop(context);
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
                   return GetAdonerScreen();
                 }));
@@ -102,16 +114,14 @@ class Homescreen extends StatelessWidget {
                 ),
               ),
             ),
-             InkWell(
+            InkWell(
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
                   return Homescreen(
-                    selectedGroup: null,
+                  
                   );
                 }));
               },
-              
-
               child: ListTile(
                 title: Text(
                   "Logout",
@@ -129,237 +139,41 @@ class Homescreen extends StatelessWidget {
             height: 160,
             width: double.infinity,
             color: Colors.red.shade900,
-           
           ),
-          
-          content(selectedGroup: selectedGroup),
-        ],
+    Column(
+      children: [
+        SizedBox(
+          height: 92,
+        ),
+        Expanded(
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(30),
+                          topRight: Radius.circular(30))),
+                  child:Content()),
+              Positioned(
+                top: -80,
+                left: MediaQuery.sizeOf(context).width * 0.35,
+                child: CircleAvatar(
+                  backgroundImage: AssetImage(
+                      'C:/FLUTTER/Firebase/firebase_persondetails/assets/images/person.jpg'),
+                  radius: 55,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    
+        )  ],
       ),
     );
   }
 }
 
-class content extends StatelessWidget {
-  const content({
-    super.key,
-    required this.selectedGroup,
-  });
 
-  final String? selectedGroup;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-    children: [
-      SizedBox(height: 92,),
-      Expanded(
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [ Container(
-            decoration: BoxDecoration(color:Colors.white,
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    topRight: Radius.circular(30))),
-            child: StreamBuilder(
-              stream: FirebaseService()
-                  .firestore
-                  .collection(FirebaseService().collectionName)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                }
-                if (snapshot.hasError) {
-                  return Center(child: Text("Something went wrong"));
-                }
-                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return Center(child: Text("No data available"));
-                }
-                if (selectedGroup != null) {
-                  List<Donerdetails> documents = [];
-                  final data = snapshot.data!.docs;
-          
-                  List<Donerdetails> datas = (data)
-                      .map(
-                          (document) => Donerdetails.fromMap(document.data()))
-                      .toList();
-                  for (Donerdetails i in datas) {
-                    if (i.bloodGroup == selectedGroup) {
-                      documents.add(i);
-                    }
-                  }
-          
-                  return Column(
-                    children: [
-                      Expanded(
-                        child: ListView.builder(padding: EdgeInsets.only(left: 10,right: 10,top: 30),
-                            itemBuilder: (context, index) {
-                              final documentsdata = documents[index];
-                                        
-                              return SizedBox(
-                                  width: double.infinity,
-                                  height: 100,
-                                  child: Card(
-                                      color: Colors.red.shade100,
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.bloodtype_rounded,
-                                            size: 60,
-                                            color: Colors.red.shade900,
-                                          ),
-                                          SizedBox(
-                                            width: 10,
-                                          ),
-                                          Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                documentsdata.name,
-                                                style: TextStyle(fontSize: 20),
-                                              ),
-                                              Text(documentsdata.mobNo,
-                                                  style: TextStyle(fontSize: 15)),
-                                            ],
-                                          ),
-                                          SizedBox(
-                                            width: 40,
-                                          ),
-                                          Text(
-                                            documentsdata.bloodGroup,
-                                            style: TextStyle(fontSize: 30),
-                                          ),
-                                          Spacer(),
-                                          IconButton(
-                                            onPressed: () {
-                                              final donerdetailsToUpdate =
-                                                  Donerdetails(
-                                                      name: datas[index].name,
-                                                      age: datas[index].age,
-                                                      bloodGroup:
-                                                          datas[index].bloodGroup,
-                                                      mobNo: datas[index].mobNo);
-                                              SaveButtonMode mode =
-                                                  SaveButtonMode.edit;
-                                              Navigator.push(context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) {
-                                                return AddnewdonerScreen(
-                                                    donerdetailsToUpdated:
-                                                        donerdetailsToUpdate,
-                                                    buttonMode: mode,
-                                                    docIdToUpdate: data[index].id);
-                                              }));
-                                            },
-                                            icon: Icon(Icons.edit),
-                                          ),
-                                          IconButton(
-                                            onPressed: () {
-                                              String documentTodelete =
-                                                  data[index].id;
-                                              FirebaseService()
-                                                  .deleteDetails(documentTodelete);
-                                            },
-                                            icon: Icon(Icons.delete),
-                                          )
-                                        ],
-                                      )));
-                            },
-                            itemCount: documents.length),
-                      ),
-                    ],
-                  );
-                }
-                final data = snapshot.data!.docs;
-          
-                List<Donerdetails> datas = (data)
-                    .map((document) => Donerdetails.fromMap(document.data()))
-                    .toList();
-                return ListView.builder(padding: EdgeInsets.only(left: 10,right: 10,top: 30),
-                  itemBuilder: (context, index) {
-                    final document = datas[index];
-                                
-                    return SizedBox(
-                        width: double.infinity,
-                        height: 100,
-                        child: Card(
-                            color: Colors.red.shade100,
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.bloodtype_rounded,
-                                  size: 60,
-                                  color: Colors.red.shade900,
-                                ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      document.name,
-                                      style: TextStyle(fontSize: 20),
-                                    ),
-                                    Text(document.mobNo,
-                                        style: TextStyle(fontSize: 15)),
-                                  ],
-                                ),
-                                SizedBox(
-                                  width: 40,
-                                ),
-                                Text(
-                                  document.bloodGroup,
-                                  style: TextStyle(fontSize: 30),
-                                ),
-                                SizedBox(width: 20,),
-                                Spacer(),
-                                IconButton(
-                                  onPressed: () {
-                                    final donerdetailsToUpdate = Donerdetails(
-                                        name: datas[index].name,
-                                        age: datas[index].age,
-                                        bloodGroup: datas[index].bloodGroup,
-                                        mobNo: datas[index].mobNo);
-                                    SaveButtonMode mode = SaveButtonMode.edit;
-                                    Navigator.push(context,
-                                        MaterialPageRoute(builder: (context) {
-                                      return AddnewdonerScreen(
-                                          donerdetailsToUpdated:
-                                              donerdetailsToUpdate,
-                                          buttonMode: mode,
-                                          docIdToUpdate: data[index].id);
-                                    }));
-                                  },
-                                  icon: Icon(Icons.edit),
-                                ),
-                                IconButton(
-                                  onPressed: () {
-                                    String documentTodelete = data[index].id;
-                                    FirebaseService()
-                                        .deleteDetails(documentTodelete);
-                                  },
-                                  icon: Icon(Icons.delete),
-                                )
-                              ],
-                            )));
-                  },
-                  itemCount: datas.length,
-                );
-              },
-            ),
-          ), Positioned(top: -80,left: MediaQuery.sizeOf(context).width*0.35,
-       child: CircleAvatar(backgroundImage: AssetImage('C:/FLUTTER/Firebase/firebase_persondetails/assets/images/person.jpg'),
-          radius: 55,
-        ),
-     ),],),
-      ),
-    ],
-                );
-  }
-}

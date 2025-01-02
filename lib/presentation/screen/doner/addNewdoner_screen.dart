@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:project1/domain/model/donerDetails.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:project1/domain/doner/doner_model/donerDetails.dart';
 import 'package:project1/model/save_edit_buttonmodel.dart';
 
 import 'package:project1/package/firebase/firebase_service.dart';
+import 'package:project1/presentation/bloc/doner/doner_bloc.dart';
 import 'package:project1/presentation/screen/home/Homescreen.dart';
 
 class AddnewdonerScreen extends StatefulWidget {
   Donerdetails? donerdetailsToUpdated;
   SaveButtonMode? buttonMode;
+   int? indexToUpdate;
 
-  String? docIdToUpdate;
+  // String? docIdToUpdate;
 
   AddnewdonerScreen(
       {this.donerdetailsToUpdated,
       this.buttonMode,
       super.key,
-      this.docIdToUpdate});
+       this.indexToUpdate});
 
   @override
   State<AddnewdonerScreen> createState() => _AddnewdonerScreenState();
@@ -27,6 +30,8 @@ class _AddnewdonerScreenState extends State<AddnewdonerScreen> {
   TextEditingController? agecontroller;
   TextEditingController? groupController;
   TextEditingController? phoneNoController;
+  
+ 
 
   @override
   void initState() {
@@ -75,7 +80,7 @@ class _AddnewdonerScreenState extends State<AddnewdonerScreen> {
             ),
             SizedBox(height: 20),
             TextFormField(
-              validator: (value) {
+              validator: (value){
                 if (value == null || value.isEmpty) {
                   return 'Can\'t be empty';
                 }
@@ -152,26 +157,28 @@ class _AddnewdonerScreenState extends State<AddnewdonerScreen> {
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     if (widget.buttonMode == SaveButtonMode.edit) {
-                      Map<String, dynamic> data = Donerdetails(
+                    
+                    final data = Donerdetails(
+                      id: widget.donerdetailsToUpdated!.id,
                               name: namecontroller!.text.trim(),
                               age: agecontroller!.text.trim(),
                               bloodGroup: groupController!.text.trim(),
                               mobNo: phoneNoController!.text.trim())
-                          .toMap();
-                      FirebaseService()
-                          .editDonerDetails(widget.docIdToUpdate!, data);
+                          ;
+                          context.read<DonerBloc>().add(DonerEdit(doner: data, docIndex: widget.indexToUpdate!));
+                     
                     } else {
-                      Map<String, dynamic> data = Donerdetails(
+                    final data = Donerdetails(
                               name: namecontroller!.text.trim(),
                               age: agecontroller!.text.trim(),
                               bloodGroup: groupController!.text.trim(),
                               mobNo: phoneNoController!.text.trim())
-                          .toMap();
-                      FirebaseService().addetails(data);
+                          ;
+                      context.read<DonerBloc>().add(DonerAdd(doner: data,));
                     }
                     widget.buttonMode = SaveButtonMode.save;
 
-                    Navigator.pop(context,Homescreen(selectedGroup: null));
+                    Navigator.pop(context,Homescreen());
                   }
                 },
                 child: Center(
