@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:project1/domain/doner/doner_model/donerDetails.dart';
@@ -12,14 +15,15 @@ class DonerBloc extends Bloc<DonerEvent, DonerState> {
     on<DonerAdd>(_donerAdd);
     on<DonerEdit>(_donerEdit);
     on<DonerDelete>(_donerDelete);
-    // on<DonerSearch>(_donerSearch);
+    on<DonerSearch>(_donerSearch);
   }
   void _donergetAll(DonerGetAll event, Emitter<DonerState> emit) async {
     emit(DonerLoading());
-    try {
+    try{
       List<Donerdetails> donersList = await donerRepository.getAllDoner();
-      emit(DonerLoaded(DonersList: donersList));
-    } catch (e) {
+      emit(DonerLoaded(DonersList: donersList, selectedDonerList: []));
+    } 
+    catch (e) {
       emit(DonerError());
     }
   }
@@ -33,7 +37,8 @@ class DonerBloc extends Bloc<DonerEvent, DonerState> {
         emit(currentstate.copyWith(
             DonersList: List.from(currentstate.DonersList)..add(event.doner),
             isLoading: false));
-      } catch (e) {
+      } 
+      catch (e) {
         emit(currentstate.copyWith(
             DonersList: List.from(currentstate.DonersList),
             isLoading: false,
@@ -53,12 +58,12 @@ class DonerBloc extends Bloc<DonerEvent, DonerState> {
         emit(currentState.copyWith(
             DonersList: List.from(currentState.DonersList)
               ..removeWhere((element) {
-                print('Removing Doner with ID: ${element.id}');
+                log('Removing Doner with ID: ${element.id}');
                 return element.id == event.doner.id;
               })
               ..insert(event.docIndex, event.doner),
             isLoading: false));
-        print('After: ${currentState.DonersList}');
+        log('After: ${currentState.DonersList}');
       } catch (e) {
         emit(currentState.copyWith(
             DonersList: currentState.DonersList,
@@ -89,20 +94,48 @@ class DonerBloc extends Bloc<DonerEvent, DonerState> {
     }
   }
 
-  void _donerSearch(DonerSearch event, Emitter<DonerState> emit) {
+  _donerSearch(DonerSearch event, Emitter<DonerState> emit) {
     final currentstate = state;
+
     if (currentstate is DonerLoaded) {
-      emit(currentstate.copyWith(isLoading: true));
+               emit(currentstate.copyWith(isLoading: true));
+      
+     
+      if(event.donerBloodGroup==null){
+      
+       emit(currentstate.copyWith(message: "No group selected",selectedDonerList: []));
+       log("no");
+     
+      }
+      else{
+   
+        log('yes');
+      List<Donerdetails>? selected = [];
+
       try {
+
+        log(event.donerBloodGroup.toString());
+
+        selected = currentstate.DonersList.where(
+            (element) => element.bloodGroup == event.donerBloodGroup).toList();
+        log(currentstate.selectedDonerList.toString());
+       
         emit(currentstate.copyWith(
-            DonersList: currentstate.DonersList,
-            selectedGroup: event.donerBloodGroup));
+            DonersList: List.from(currentstate.DonersList),
+            selectedGroup: event.donerBloodGroup,
+            selectedDonerList: selected,
+            message: 'no'));
+      
       } catch (e) {
+        log('error');
         emit(currentstate.copyWith(
             DonersList: List.from(currentstate.DonersList),
             isLoading: false,
             isError: true,
             message: e.toString()));
+    
+   }
+      
       }
     }
   }

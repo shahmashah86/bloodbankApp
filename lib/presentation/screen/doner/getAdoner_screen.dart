@@ -1,23 +1,25 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:project1/presentation/bloc/doner/doner_bloc.dart';
+import 'package:project1/presentation/screen/doner/widget/doner_content_widget.dart';
 
-import 'package:project1/presentation/screen/home/Homescreen.dart';
-import 'package:project1/presentation/screen/widget/content.dart';
+class GetAdonerScreen extends StatelessWidget {
+  GetAdonerScreen({
+    super.key,
+  });
 
-class GetAdonerScreen extends StatefulWidget {
-  GetAdonerScreen({super.key});
-  @override
-  State<GetAdonerScreen> createState() => _GetAdonerScreenState();
-}
-
-class _GetAdonerScreenState extends State<GetAdonerScreen> {
-  int km = 5;
-  List<String> bloodgroups = ['A+', 'B+', 'AB+', 'A-', 'B-', 'AB-', 'O+', 'O-'];
   final ValueNotifier<int> selectedIndex = ValueNotifier(-1);
 
-  String? selected_group;
+  final List<String> bloodgroups = [
+    'A+',
+    'B+',
+    'AB+',
+    'A-',
+    'B-',
+    'AB-',
+    'O+',
+    'O-'
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -44,14 +46,10 @@ class _GetAdonerScreenState extends State<GetAdonerScreen> {
                   return InkWell(
                     onTap: () {
                       selectedIndex.value = index;
-                      selected_group = bloodgroups[index];
-                      // Navigator.push(context,
-                      //     MaterialPageRoute(builder: (context) {
-                        
-                      // }));
-                      context.read().add(DonerSearch(donerBloodGroup: selected_group));
-                    },
 
+                      context.read<DonerBloc>().add(
+                          DonerSearch(donerBloodGroup: bloodgroups[index]));
+                    },
                     child: Card(
                         color: selectedIndex.value == index
                             ? Colors.red.shade100
@@ -71,14 +69,12 @@ class _GetAdonerScreenState extends State<GetAdonerScreen> {
                 itemCount: bloodgroups.length,
               ),
             ),
-            
           ),
         ),
         SizedBox(
           height: 20,
         ),
-        // Expanded(child: content())
-        
+        Expanded(child: DonerContentWidget()),
       ]),
     );
   }

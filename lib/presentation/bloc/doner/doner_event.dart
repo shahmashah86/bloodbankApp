@@ -2,7 +2,10 @@
 part of 'doner_bloc.dart';
 
 // @immutable
-sealed class DonerEvent {}
+sealed class DonerEvent extends Equatable{
+ @override
+  List<Object?> get props => [];
+}
 
 class DonerGetAll extends DonerEvent{
 
@@ -12,6 +15,9 @@ class DonerAdd extends DonerEvent {
   DonerAdd({
   required this.doner,
   });  
+  List<Object?> get props=>[doner];
+  
+  
 }
 
 
@@ -22,18 +28,23 @@ class DonerEdit extends DonerEvent{
      required this.doner,
    required this.docIndex,
   });
-  
+  @override
+    List<Object?> get props => [doner];
 }
 class DonerDelete extends DonerEvent{
-  String docIndex;
+ final  String docIndex;
  DonerDelete({required this.docIndex});
+ @override
+   List<Object?> get props => [docIndex];
 }
 
 
 
 class DonerSearch extends DonerEvent{
-  String? donerBloodGroup;
+  final String? donerBloodGroup;
   DonerSearch({required this.donerBloodGroup});
+  @override
+    List<Object?> get props => [donerBloodGroup];
 
 }
 

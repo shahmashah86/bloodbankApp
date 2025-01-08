@@ -2,10 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:project1/domain/doner/doner_repository/doner_repository.dart';
 import 'package:project1/firebase_options.dart';
+import 'package:project1/presentation/bloc/auth/auth_bloc.dart';
 import 'package:project1/presentation/bloc/doner/doner_bloc.dart';
-import 'package:project1/presentation/screen/home/Homescreen.dart';
+import 'package:project1/presentation/screen/auth/login_screen.dart';
 import 'injection/di.dart' as di;
 
 Future<void> main() async {
@@ -19,7 +19,10 @@ Future<void> main() async {
       const Settings(persistenceEnabled: true);
 
   runApp(MultiBlocProvider(
-      providers: [BlocProvider.value(value: di.getIt<DonerBloc>())],
+      providers: [BlocProvider.value(value: di.getIt<DonerBloc>()),
+       BlocProvider.value(
+          value: di.getIt<AuthBloc>(),
+        )],
       child: const MyApp()));
 }
 
@@ -35,7 +38,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: Homescreen(),
+      home:LoginScreen()
     );
   }
 }

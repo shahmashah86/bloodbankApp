@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:project1/data/doner/doner_repository_impl/doner_dto/doner_dto.dart';
+import 'package:project1/data/doner/doner_dto/doner_dto.dart';
 import 'package:project1/domain/doner/doner_model/donerDetails.dart';
 
 import 'package:uuid/uuid.dart';
@@ -41,14 +41,4 @@ class FirebaseService {
         .toList();
   }
 
-  // void getAdoner(String bloodGroup){
-  //     firestore.collection(collectionName).where('bloodGroup',isEqualTo: bloodGroup);
-  //     // firestore.collection(collectionName).orderBy('name',descending: true).limit(2);
-  // }
-  //  Stream<QuerySnapshot> getAdoner(String bloodGroup) {
-  //   return firestore
-  //       .collection(collectionName)
-  //       .where('bloodGroup', isEqualTo: bloodGroup)
-  //       .snapshots();
-  // }
 }

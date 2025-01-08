@@ -115,6 +115,12 @@ class _AddnewdonerScreenState extends State<AddnewdonerScreen> {
                 if (value == null || value.isEmpty) {
                   return 'Can\'t be empty';
                 }
+               final bloodgroups=['A+', 'B+', 'AB+', 'A-', 'B-', 'AB-', 'O+', 'O-'];
+               String uppercaseValue=value.toUpperCase();
+                if(!bloodgroups.contains(uppercaseValue))
+                {
+                 return "not a valid bloodgroup";
+                }
               },
               controller: groupController,
               decoration: InputDecoration(
@@ -162,7 +168,7 @@ class _AddnewdonerScreenState extends State<AddnewdonerScreen> {
                       id: widget.donerdetailsToUpdated!.id,
                               name: namecontroller!.text.trim(),
                               age: agecontroller!.text.trim(),
-                              bloodGroup: groupController!.text.trim(),
+                              bloodGroup: groupController!.text.toUpperCase().trim(),
                               mobNo: phoneNoController!.text.trim())
                           ;
                           context.read<DonerBloc>().add(DonerEdit(doner: data, docIndex: widget.indexToUpdate!));
